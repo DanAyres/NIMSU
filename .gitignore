@@ -1,0 +1,9 @@
+/.project
+/.pydevproject
+/.metadata
+*~
+*.o
+*.mod
+__init__.*
+*.pyc
+*.so
