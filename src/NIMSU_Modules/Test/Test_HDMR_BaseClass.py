@@ -4,11 +4,11 @@ Created on 14 Apr 2015
 @author: daiel
 '''
 import unittest
-from HDMR.HDMR_Base_Class import HDMR_Base
+from HDMR.HDMR_BaseClass import HDMR_Base
 import numpy as np
 from collections import namedtuple
-from DataTypes.Results import singleData,listData
-from SparseGrids.LibSG import sparse_grid
+from DataTypes.DataType_Results import singleData,listData
+from SparseGrids.SparseGridBaseClass import sparse_grid
 
 class sampler_test_base():
     

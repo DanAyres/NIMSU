@@ -6,8 +6,8 @@ Created on 3 Feb 2015
 
 import os
 import numpy as np
-from UserInterface.Errors_and_Warnings import ProcessingError, ReadError
-from Sampling.Transforms import FormCorrelation
+from UserInterface.UIErrorsandWarnings import ProcessingError, ReadError
+from Sampling.SampTransforms import FormCorrelation
 
 class param:
     """

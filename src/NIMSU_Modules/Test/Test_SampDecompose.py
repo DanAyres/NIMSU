@@ -5,8 +5,8 @@ Created on 10 Feb 2015
 '''
 
 import unittest
-from Sampling.Decompose import Karhunen_Loeve, Cholesky, Cumulative_Eigenvalues, Decompose_Covariance_Matrix
-from Sampling.Form_Covariance import Exponential_kernel
+from Sampling.SampDecompose import Karhunen_Loeve, Cholesky, Cumulative_Eigenvalues, Decompose_Covariance_Matrix
+from Sampling.SampFormCovariance import Exponential_kernel
 from StringIO import StringIO
 import numpy as np
 

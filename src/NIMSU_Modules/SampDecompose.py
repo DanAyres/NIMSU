@@ -6,7 +6,7 @@ Created on 9 Feb 2015
 
 
 import numpy as np
-from UserInterface.Errors_and_Warnings import ProcessingError
+from UserInterface.UIErrorsandWarnings import ProcessingError
 
 
 def Decompose_Covariance_Matrix(Covariance_Matrix, depend, decomp, NParams, kl_theta, output):

@@ -4,11 +4,11 @@ Created on 31 Mar 2015
 @author: daiel
 '''
 
-from SparseGrids.LibSG import sparse_grid
+from SparseGrids.SparseGridBaseClass import sparse_grid
 import numpy as np
 from operator import mul, itemgetter
 from itertools import combinations
-from DataTypes.Results import singleData, listData
+from NIMSU_Modules.DataType_Results import singleData, listData
 from FORTRAN_Modules.sandiainterface import reduced_sg as Sandia
 
 class HDMR_Base():

@@ -4,10 +4,10 @@ Created on 7 Feb 2015
 @author: daniel
 '''
 
-from Sampling.Form_Covariance import Form_Covariance_Matrix
-from Sampling.Transforms import Transform_Statistics
-from Sampling.Decompose import Decompose_Covariance_Matrix
-from Sampling.Distributions import Assign_Sampling_Routine, Assign_Rules_PDFS
+from Sampling.SampFormCovariance import Form_Covariance_Matrix
+from Sampling.SampTransforms import Transform_Statistics
+from Sampling.SampDecompose import Decompose_Covariance_Matrix
+from Sampling.SampDistributions import Assign_Sampling_Routine, Assign_Rules_PDFS
 
 class SampleUncertainties():
 

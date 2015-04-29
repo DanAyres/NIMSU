@@ -4,7 +4,7 @@ Created on 14 Apr 2015
 @author: daiel
 '''
 import unittest
-from DataTypes.Results import singleData, listData, hdf5Data
+from DataTypes.DataType_Results import singleData, listData, hdf5Data
 import numpy as np
 
 class Test(unittest.TestCase):

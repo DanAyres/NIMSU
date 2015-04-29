@@ -1,9 +1,9 @@
 import unittest
-from SparseGrids.LibSG import sparse_grid, Compute_Grid, CalcSparseSet
+from SparseGrids.SparseGridBaseClass import sparse_grid, Compute_Grid, CalcSparseSet
 from FORTRAN_Modules.sandiainterface import reduced_sg as Sandia
 import numpy as np
 import sys
-from DataTypes.Results import singleData, listData, hdf5Data
+from DataTypes.DataType_Results import singleData, listData, hdf5Data
 
 class TestLibSG(unittest.TestCase):
 

@@ -5,7 +5,7 @@ Created on 9 Feb 2015
 '''
 
 import numpy as np
-from UserInterface.Errors_and_Warnings import ProcessingError, WarningMessage
+from UserInterface.UIErrorsandWarnings import ProcessingError, WarningMessage
 
 
 

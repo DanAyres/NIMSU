@@ -3,30 +3,34 @@ Created on 4 Feb 2015
 
 @author: daniel
 '''
-from UserInterface.interface import ReadControlFile, ReadParamFile
-from Sampling.samples import SampleUncertainties
-from SparseGrids.LibSG import sparse_grid, CalcSparseSet
-from HDMR.HDMR_Base_Class import HDMR_Base
+from UserInterface.UIBaseClass import ReadControlFile, ReadParamFile
+from Sampling.SampBaseClass import SampleUncertainties
+from SparseGrids.SparseGridBaseClass import sparse_grid, CalcSparseSet
+from HDMR.HDMR_BaseClass import HDMR_Base
 import os
 import sys
 import numpy as np
 from collections import namedtuple
+from NIMSU_Modules.NISP import NISP
 
-from HDMR.Test.Test_HDMR_Base_Class import engine_test, control_info, sampler_test_base
-from DataTypes.Results import listData, singleData
+from HDMR.Test.Test_HDMR_BaseClass import engine_test, control_info, sampler_test_base
+from DataTypes.DataType_Results import listData, singleData
 
 
 if __name__ == "__main__":
     
 #     filename="../1D.control"
-#     
+#      
 #     control_info = ReadControlFile(open(filename,'r'), sys.stdout)
-#     
+#      
 #     input_params=ReadParamFile(open("../"+control_info.param_infile,'r'), sys.stdout)
-#     
+#      
 #     sampler = SampleUncertainties(input_params, control_info, sys.stdout)
-#     
-        
+#      
+    
+    
+    
+    
     Total_stoch_dim=3
         
     # Setup the sampling object        
@@ -44,6 +48,17 @@ if __name__ == "__main__":
     engine = engine_test(control_info, nominal)
         
         
+
+    # Create new NISP object
+    scm=NISP(control_info, sampler, engine)    
+    
+    
+    
+    
+    
+    
+    
+    quit()
     # Create new HDMR object
     newHDMR = HDMR_Base(control_info, engine, sampler) 
     

@@ -4,7 +4,7 @@ Created on 9 Feb 2015
 @author: daniel
 '''
 
-from Sampling.Transforms import Transform_Statistics, FormCorrelation, LN2N_Covar, LN2N_Mean, Transform_LogNormal
+from Sampling.SampTransforms import Transform_Statistics, FormCorrelation, LN2N_Covar, LN2N_Mean, Transform_LogNormal
 import numpy as np
 
 import unittest

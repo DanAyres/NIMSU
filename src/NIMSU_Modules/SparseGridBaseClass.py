@@ -4,7 +4,7 @@ from FORTRAN_Modules.maxheap import maxheap
 from FORTRAN_Modules.sandiainterface import reduced_sg as Sandia
 from FORTRAN_Modules.ggmethods import gerstnergriebel as ggmeth
 
-from DataTypes.Results import singleData, listData
+from DataTypes.DataType_Results import singleData, listData
 
 import sys
 
