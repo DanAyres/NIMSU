@@ -4,7 +4,7 @@ Created on 4 Feb 2015
 @author: daniel
 '''
 import unittest
-from UserInterface.UIBaseClass import ReadControlFile, ReadParamFile, ReadSubFileData
+from NIMSU_Modules.UIBaseClass import ReadControlFile, ReadParamFile, ReadSubFileData
 from StringIO import StringIO
 import numpy as np
 import sys

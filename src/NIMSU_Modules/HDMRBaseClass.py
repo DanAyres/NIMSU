@@ -4,7 +4,7 @@ Created on 31 Mar 2015
 @author: daiel
 '''
 
-from SparseGrids.SparseGridBaseClass import sparse_grid
+from NIMSU_Modules.SparseGridBaseClass import sparse_grid
 import numpy as np
 from operator import mul, itemgetter
 from itertools import combinations

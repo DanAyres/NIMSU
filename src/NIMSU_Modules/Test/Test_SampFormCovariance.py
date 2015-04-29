@@ -6,7 +6,7 @@ Created on 9 Feb 2015
 
 import unittest
 import numpy as np
-from Sampling.SampFormCovariance import Exponential_kernel, Calculate_Covariance_Matrix, Form_Covariance_Matrix, PosDef
+from NIMSU_Modules.SampFormCovariance import Exponential_kernel, Calculate_Covariance_Matrix, Form_Covariance_Matrix, PosDef
 
 from StringIO import StringIO
 #import sys

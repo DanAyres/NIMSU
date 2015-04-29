@@ -5,7 +5,7 @@ Created on 9 Feb 2015
 '''
 
 import numpy as np
-from UserInterface.UIErrorsandWarnings import ProcessingError, WarningMessage
+from NIMSU_Modules.UIErrorsandWarnings import ProcessingError, WarningMessage
 
 
 
