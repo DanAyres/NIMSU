@@ -69,6 +69,7 @@ class Control:
         self.setup_files=None
         self.num_procs=1
         self.scale_sampling=False
+        self.ValueType='single'
 #       MC
         self.use_mc=True
         self.mc_method='latinhyper'
@@ -80,6 +81,8 @@ class Control:
 #       SCM
         self.use_scm=False
         self.scm_quad_adapt=False
+        self.scm_multi_element=False
+        self.scm_multi_element_dims=None
         self.scm_quad_tol=1E-3
         self.scm_sg_level=[2]
         self.scm_pce=True

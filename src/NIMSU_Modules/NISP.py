@@ -5,38 +5,38 @@ Created on 24 Apr 2015
 '''
 
 import numpy as np
-from SparseGrids.SparseGridBaseClass import sparse_grid, CalcSparseSet
+from NIMSU_Modules.SparseGridBaseClass import sparse_grid
+from NIMSU_Modules.DataTypePCE import PCE
+from operator import mul
 
+
+def Project2Basis(ele, PDF):
+    for poly in ele.pce:
+        for pos,p in enumerate(ele.SparseGrid.Index):
+            pts=ele.SparseGrid.Points[poly[2],p]
+            poly[0] += PDF * ele.SparseGrid.Weights[pos] * ele.PolyProd(poly[1], pts, poly[2]) * ele.SparseGrid.Values[p]
+        poly[0] /= ele.PolyNorms(poly[1], poly[2])
+        
+        #print  poly[0].val, poly[0].list
+    
 
 def NISP(control_info, sampler, engine):
-
-    # identify which dimensions are to be split.
     
-    # split elements
-    
-    # list of elements
-    # each element needs to know domain, pdf, etc.
-    
-    
-
-    me_dims=[1]
-    
-
-    multi=[False for i in range(sampler.Total_stoch_dim+1)]
-    multi[2]=True
-    
-    print multi
-
-    rules=np.ones(sampler.Total_stoch_dim,int)
-    sg=sparse_grid(rules, \
-                sampler.Total_stoch_dim, \
-                2, \
-                engine.Nominal, \
-                Adaptive=False, \
-                AdaptTol=control_info.hdmr_quad_tol, \
-                MaxVals=40, \
-                ValueType=control_info.ValueType)
-
-    #for i in range(sg.Num_Points):
-    #    print sg.Points[:,i] 
-    pass    
+    newPCE=PCE(control_info, sampler, engine.Nominal)                 
+        
+    # Integrate over each elements    
+    adapt_Int_Complete=False
+    while not adapt_Int_Complete:
+        
+        Samples = newPCE.CalculateSamples()
+            
+        Results=engine.interface(Samples)
+            
+        adapt_Int_Complete = newPCE.UpdateIntegrals(Results)
+            
+    # Project onto the polynomial basis   
+    for ele in newPCE.Elements:
+        Project2Basis(ele, newPCE.PDF)
+        
+    #newPCE.CalculateErrorMeasures()
+            

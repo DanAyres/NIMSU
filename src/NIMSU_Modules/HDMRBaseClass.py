@@ -113,7 +113,7 @@ class HDMR_Base():
             
                 self.CalcErrorMeasures(self.data_struct[dimension-1][start:end])
             
-                # Test for "superposition" convergence
+                # Test for "super-position" convergence
                 if self.innerConvergenceTest(self.data_struct[dimension-1][start:end]):
                     del self.data_struct[dimension-1][end:]
                     break
@@ -346,6 +346,7 @@ class HDMR_Base():
                     
     def getResults(self, Samples):
         
+        # Pull out the any previously calculated results from repeated points
         Results={ key:Samples[key] for key in Samples if not isinstance(Samples[key],dict) }
         Samples_n = { key:Samples[key] for key in Samples if isinstance(Samples[key],dict) }
         
@@ -366,7 +367,7 @@ class HDMR_Base():
                             in the <samples> module.
             
             Returns:
-                Samples: dictionaty of sampled values.
+                Samples: dictionary of sampled values.
         
         """
         

@@ -54,11 +54,11 @@ class OrthPoly():
 
 
         eps = 1.0E-10
-        self.abcissa, self.weights = orthpol.orthpol_interface.quadrature_rule(alpha,beta,eps)
+        self.Points, self.Weights = orthpol.orthpol_interface.quadrature_rule(alpha,beta,eps)
         
         self.coefficients=orthpol.orthpol_interface.polynomial_coefficients(alpha,beta)
 
-        self.norms=orthpol.orthpol_interface.normalisation_factors(self.coefficients,self.abcissa,self.weights)
+        self.norms=orthpol.orthpol_interface.normalisation_factors(self.coefficients,self.Points,self.Weights)
         
         self.coefficients = self.coefficients.T
 

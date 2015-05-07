@@ -7,17 +7,19 @@ from FORTRAN_Modules.ggmethods import gerstnergriebel as ggmeth
 from NIMSU_Modules.DataType_Results import singleData, listData
 
 import sys
+import itertools
+from operator import mul
 
 
 class sparse_grid:
 
-    def __init__(self, rules, num_dim, LevelMax, Nominal,  Adaptive=False, AdaptTol=1.0E-3, MaxVals=20, wmix=0.0, ValueType='single'):
+    def __init__(self, rules, num_dim, LevelMax, ValueType, Nominal=0.0,  Adaptive=False, AdaptTol=1.0E-3, MaxVals=20, wmix=0.0, TensorProd=False):
         """
         
             Initialise the sparse grid class. 
             
             If the NON-adaptive option is selected; a standard sparse grid will 
-            be construced with maximum level "LevelMax".
+            be constructed with maximum level "LevelMax".
             
             When the adaptive option is selected all of the necessary data structures
             are initialised and the next set of points to be computed are stored.
@@ -109,7 +111,7 @@ class sparse_grid:
         if any([r==10 for r in rules]):
             if self.LevelMax > 4:
                 self.LevelMax=4
-
+        
         # Some required parameters
         self.sc=np.zeros(self.num_dim,int)
         self.p=[]
@@ -117,6 +119,11 @@ class sparse_grid:
         
         
         self.Adaptive=Adaptive
+        
+        
+        if TensorProd:
+            self.Points, self.Weights, self.Num_Points = self.TensorProduct()
+            return
         
         if self.Adaptive==True:
         
@@ -157,7 +164,7 @@ class sparse_grid:
             
             
             # Initialise points, weights, and values
-            self.Values[0] = Nominal
+            self.Values[0] = self.Nominal
             self.Points[:,:1], self.Weights = self.Compute_Grid(self.Idx[:,0])
             self.Index = np.zeros(1,int)
             self.Num_Points = 1
@@ -176,8 +183,44 @@ class sparse_grid:
         else:
         
             self.Idx = CalcSparseSet(0, self.LevelMax, self.num_dim)
+            
             self.Points, self.Weights = self.Compute_Grid(self.Idx)
             self.Num_Points = np.shape(self.Points)[1]
+            self.Index=range(self.Num_Points)
+
+    def TensorProduct(self):
+        
+        Idx = CalcSparseSet(0, self.LevelMax, 1)
+        seed = 123456789
+        growth=np.zeros(1,int)
+        sc=np.zeros(1,int)
+        pts=[]
+        wts=[]
+        Num_Points=1
+        for r in self.rules:
+
+            Coeff= Sandia.calculate_coefficients(Idx, self.q_max)
+            new_np = Sandia.max_next_points(Idx, Coeff, [r], growth)
+            points = Sandia.weights_and_points(new_np, self.LevelMax, Idx, Coeff, growth, [r], sc, self.p)
+        
+            N_Unique, sparse_index = Sandia.unique_points(seed, self.tol, points)
+            Points, Weights=Sandia.reduce_points_and_weights(N_Unique, points, Idx, sparse_index, Coeff, growth, [r], sc, self.p)
+                        
+            pts.append(Points[0,:])
+            wts.append(Weights)
+            Num_Points *=np.shape(Points)[1]
+            
+        tmp=itertools.product(*pts)
+        Points=np.zeros([self.num_dim,Num_Points],float)
+        for i,j in enumerate(tmp):
+            Points[:,i] = np.asarray(j)
+            
+        tmp=itertools.product(*wts)
+        Weights=np.zeros([Num_Points],float)
+        for i,j in enumerate(tmp):
+            Weights[i] = reduce(mul,j)
+            
+        return Points, Weights, Num_Points
 
     def Adapt(self, values):
         
@@ -442,7 +485,7 @@ def Compute_Grid(Idx, Coeff, q_max, rules, growth, LevelMax, sc, p, tol, ):
     N_Unique, sparse_index = Sandia.unique_points(seed, tol, points)
     return Sandia.reduce_points_and_weights(N_Unique, points, Idx, sparse_index, Coeff, growth, rules, sc, p)
 
-def CalcSparseSet(level_min, level_max,dim_num):
+def CalcSparseSet(level_min, level_max, dim_num):
     sparse_set=[]
     s=True
     for level in range(level_min,level_max+1):

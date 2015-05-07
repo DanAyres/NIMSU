@@ -21,13 +21,13 @@ class TestLibSG(unittest.TestCase):
         vt='list'
         wmix = 0.0
         Nominal=listData(nom,listt=nom*np.ones(3,float))
-        newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix, ValueType=vt)
+        newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix)
         Error=newgrid.ErrorMeasure(new_int, old_int)
         self.assertEqual(Error, 2.0)        
 
         wmix = 1.0
         Nominal=listData(nom,listt=nom*np.ones(3,float))
-        newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix, ValueType=vt)
+        newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix)
         Error=newgrid.ErrorMeasure(new_int, old_int)
         self.assertEqual(Error, 1.0)
 
@@ -35,13 +35,13 @@ class TestLibSG(unittest.TestCase):
         vt='single'
         wmix = 0.0
         Nominal=singleData(nom)
-        newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix, ValueType=vt)
+        newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix)
         Error=newgrid.ErrorMeasure(new_int, old_int)
         self.assertEqual(Error, 2.0)        
 
         wmix = 1.0
         Nominal=listData(nom)
-        newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix, ValueType=vt)
+        newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, wmix=wmix)
         Error=newgrid.ErrorMeasure(new_int, old_int)
         self.assertEqual(Error, 1.0)
 
@@ -56,7 +56,7 @@ class TestLibSG(unittest.TestCase):
         exponent=2
         nom=intfunc_uni(np.zeros(num_dim,float),exponent)
         Nominal=listData(nom,nom*np.ones(3,float))
-        newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, ValueType=vt)
+        newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=False, AdaptTol=1.0E-10, MaxVals=20 )
         
         Idx=range(newgrid.Num_Points)
         newgrid.Values=[listData(0.0,np.zeros(3,float)) for i in range(newgrid.Num_Points)]
@@ -76,7 +76,7 @@ class TestLibSG(unittest.TestCase):
         vt='single'
         exponent=2
         Nominal=intfunc_uni(np.zeros(num_dim,float),exponent)
-        newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal, Adaptive=False, AdaptTol=1.0E-10, MaxVals=20, ValueType=vt)
+        newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal, Adaptive=False, AdaptTol=1.0E-10, MaxVals=20)
         
         Idx=range(newgrid.Num_Points)
         newgrid.Values=[singleData(0.0) for i in range(newgrid.Num_Points)]
@@ -225,7 +225,7 @@ class TestLibSG(unittest.TestCase):
               
                     rules=q*np.ones(num_dim,int)
                                   
-                    newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=100, ValueType=vt)
+                    newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=100)
                                 
                     adapt_flag=True
                     while adapt_flag:
@@ -249,7 +249,7 @@ class TestLibSG(unittest.TestCase):
               
                     rules=q*np.ones(num_dim,int)
                                   
-                    newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=100, ValueType=vt)
+                    newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=100)
                                 
                     adapt_flag=True
                     while adapt_flag:
@@ -281,7 +281,7 @@ class TestLibSG(unittest.TestCase):
               
                     rules=q*np.ones(num_dim,int)
                                   
-                    newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=1000, ValueType=vt)
+                    newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=1000)
                                 
                     adapt_flag=True
                     while adapt_flag:
@@ -305,7 +305,7 @@ class TestLibSG(unittest.TestCase):
               
                     rules=q*np.ones(num_dim,int)
                                   
-                    newgrid = sparse_grid(rules, num_dim, LevelMax, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=1000, ValueType=vt)
+                    newgrid = sparse_grid(rules, num_dim, LevelMax, vt, Nominal,  Adaptive=True, AdaptTol=1.0E-8, MaxVals=1000)
                                 
                     adapt_flag=True
                     while adapt_flag:
@@ -333,10 +333,11 @@ class TestLibSG(unittest.TestCase):
         num_dim=1
         Nominal = 1.0
         rules=3*np.ones(num_dim,int)
+        vt='single'
   
         # check that the maximum level is not exceeded (one dimension only)
         for level in range(2,7):
-            newgrid = sparse_grid(rules, num_dim, level, Nominal,  Adaptive=True, AdaptTol=1.0E-10, MaxVals=20)
+            newgrid = sparse_grid(rules, num_dim, level, vt, Nominal,  Adaptive=True, AdaptTol=1.0E-10, MaxVals=20)
             LargestErrorFowardNeighbours_genidx(level, newgrid)
             newidx=newgrid.LargestErrorFowardNeighbours()
             self.assertEqual(len(newidx), 0)
@@ -345,7 +346,7 @@ class TestLibSG(unittest.TestCase):
         num_dim=2
         rules=3*np.ones(num_dim,int)
         for level in range(2,7):
-            newgrid = sparse_grid(rules, num_dim, level, Nominal,  Adaptive=True, AdaptTol=1.0E-10, MaxVals=100)
+            newgrid = sparse_grid(rules, num_dim, level, vt, Nominal,  Adaptive=True, AdaptTol=1.0E-10, MaxVals=100)
             LargestErrorFowardNeighbours_genidx2D(level,newgrid)
             newidx=newgrid.LargestErrorFowardNeighbours()
               
