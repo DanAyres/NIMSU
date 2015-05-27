@@ -1,3 +1,32 @@
+"""
+
+    Author:
+        Dan Ayres
+
+
+    Objects for creating multidimensional quadrature schemes. 
+
+
+    Functions:
+    
+        - CalcSparseSet -- Calculate a partial tensor product of indexes 
+        - level_sums -- return all combinations of vectors r of length l whose sum=n
+    
+    
+    Classes:
+    
+        - sparse_gird -- quadrature class
+
+
+
+Note 1:
+    When using the adaptive quadrature to integrate the square of polynomials, if the quadrature rule used
+    is the Gaussian counterpart of the polynomial being integrated i.e. a Gauss-Legendre rule is used to integrate the
+    the Legendre polynomials, then the P_3 polynomial will not integrate correctly. This is because the initial step 
+    of the adaptive procedure uses three points which are the roots of the third polynomial. Combined with a nominal 
+    value of zero, the total error will be zero.  
+
+"""
 
 import numpy as np
 from FORTRAN_Modules.maxheap import maxheap
@@ -13,7 +42,18 @@ from operator import mul
 
 class sparse_grid:
 
-    def __init__(self, rules, num_dim, LevelMax, ValueType, Nominal=0.0,  Adaptive=False, AdaptTol=1.0E-3, MaxVals=20, wmix=0.0, TensorProd=False):
+    def __init__(self, rules, 
+                 num_dim, 
+                 LevelMax, 
+                 ValueType, 
+                 Nominal=0.0,  
+                 Adaptive=False, 
+                 AdaptTol=1.0E-3, 
+                 MaxVals=20, 
+                 wmix=0.0, 
+                 TensorProd=False,
+                 Listlen=None,
+                 Distribution_Args=None):
         """
         
             Initialise the sparse grid class. 
@@ -64,20 +104,11 @@ class sparse_grid:
                     10, "HGK", Hermite Genz-Keister, Open Fully Nested.
                     11, "UO",  User supplied Open, presumably Non Nested.
                     12, "UC",  User supplied Closed, presumably Non Nested.
+
     
                 num_dim: number of dimensions
                 
                 LevelMax: the maximum quadrature level:
-                
-                Nominal:  the value of the integrand at (0,0,0,...)
-                
-                Adaptive: Toggle the adaptive grid
-                
-                AdaptTol: Error tolerance of the integration
-                
-                MaxVals:  Largest number of indexes allowed
-                
-                wmix:    (1-wmix) * var + wmix * mean
                 
                 ValueType:    determine how the results are stored.
                               ='single': a single result is stored in the Values array.
@@ -85,6 +116,31 @@ class sparse_grid:
                               e.g.    [val, [a1,b2,...] ].
                               ='hdf5': each result consists of a value and an hdf5 filename.
                               e.g.    [val,filemane]
+                
+                Nominal:  the value of the integrand at (0,0,0,...) 
+                          Default = 0.0
+                
+                Adaptive: Toggle the adaptive grid
+                          Default = False
+                
+                AdaptTol: Error tolerance of the integration
+                          Default = 1.0E-3
+                
+                MaxVals:  Largest number of indexes allowed
+                          Default = 20
+                
+                wmix:    (1-wmix) * var + wmix * mean
+                          Default = 0.0
+                
+                TensorProd:    Toggle the calculation of a tensor grid of points/
+                          Default = False
+
+                Listlen:    Length of the results list.
+                            Default = None
+                
+                Distribution_Args: A list of ndarrays for each probability distribution that requires
+                                   additional parameters e.g the beta distribution requires alpha and beta.
+                                   Distributions which
                     
         """
         
@@ -105,24 +161,32 @@ class sparse_grid:
         
         # calculate the length of the results list
         if self.ValueType == 'list':
-            self.Results_ListLen = len(self.Nominal.list)
+            if Listlen is None:
+                raise ValueError("No results list length given")
+            self.Results_ListLen = Listlen
         
         # Check that LevelMax is allowed for the quadrature rule
         if any([r==10 for r in rules]):
             if self.LevelMax > 4:
                 self.LevelMax=4
         
-        # Some required parameters
-        self.sc=np.zeros(self.num_dim,int)
+        # Parameters associated with the probability distributions
         self.p=[]
+        self.sc=np.zeros(self.num_dim,int)
+        if Distribution_Args is not None:
+            for i in range(self.num_dim):
+                if Distribution_Args[i] is not None:
+                    self.sc[i] = len(Distribution_Args[i])
+                    for val in Distribution_Args[i]:
+                        self.p.append(val)
+            
         self.tol=np.sqrt( sys.float_info.epsilon )
-        
         
         self.Adaptive=Adaptive
         
         
         if TensorProd:
-            self.Points, self.Weights, self.Num_Points = self.TensorProduct()
+            self.Points, self.Weights, self.Num_Points = TensorProduct(self.LevelMax, self.num_dim, self.rules, Distribution_Args)
             return
         
         if self.Adaptive==True:
@@ -144,8 +208,7 @@ class sparse_grid:
             self.Idx=np.zeros([self.num_dim,self.MaxVals],int)
             self.Errors=-1.0*np.ones(self.MaxVals,float)
             
-            
-            # Initiialise the sparse grid
+            # Initialise the sparse grid
             self.N_Idx = self.num_dim+1
             self.N_Old = 1
             self.N_Active = self.num_dim
@@ -187,40 +250,6 @@ class sparse_grid:
             self.Points, self.Weights = self.Compute_Grid(self.Idx)
             self.Num_Points = np.shape(self.Points)[1]
             self.Index=range(self.Num_Points)
-
-    def TensorProduct(self):
-        
-        Idx = CalcSparseSet(0, self.LevelMax, 1)
-        seed = 123456789
-        growth=np.zeros(1,int)
-        sc=np.zeros(1,int)
-        pts=[]
-        wts=[]
-        Num_Points=1
-        for r in self.rules:
-
-            Coeff= Sandia.calculate_coefficients(Idx, self.q_max)
-            new_np = Sandia.max_next_points(Idx, Coeff, [r], growth)
-            points = Sandia.weights_and_points(new_np, self.LevelMax, Idx, Coeff, growth, [r], sc, self.p)
-        
-            N_Unique, sparse_index = Sandia.unique_points(seed, self.tol, points)
-            Points, Weights=Sandia.reduce_points_and_weights(N_Unique, points, Idx, sparse_index, Coeff, growth, [r], sc, self.p)
-                        
-            pts.append(Points[0,:])
-            wts.append(Weights)
-            Num_Points *=np.shape(Points)[1]
-            
-        tmp=itertools.product(*pts)
-        Points=np.zeros([self.num_dim,Num_Points],float)
-        for i,j in enumerate(tmp):
-            Points[:,i] = np.asarray(j)
-            
-        tmp=itertools.product(*wts)
-        Weights=np.zeros([Num_Points],float)
-        for i,j in enumerate(tmp):
-            Weights[i] = reduce(mul,j)
-            
-        return Points, Weights, Num_Points
 
     def Adapt(self, values):
         
@@ -447,25 +476,25 @@ class sparse_grid:
         """
             Calculate a sparse grid quadrature scheme from a set of index
             vectors.
-            
+             
             Args:
                 Idx:    Array of index vectors. e.g. Idx= [ [0,0], [0,1], [1,0] ] 
-                
+                 
             Returns:
                 Points:    Quadrature points
                 Weight:    Quadrature weights
         """
-
+ 
         seed = 123456789
         Coeff= Sandia.calculate_coefficients(Idx, self.q_max)
         new_np = Sandia.max_next_points(Idx, Coeff, self.rules, self.growth)
         points = Sandia.weights_and_points(new_np, self.LevelMax, Idx, Coeff, self.growth, self.rules, self.sc, self.p)
-        
+         
         N_Unique, sparse_index = Sandia.unique_points(seed, self.tol, points)
         return Sandia.reduce_points_and_weights(N_Unique, points, Idx, sparse_index, Coeff, self.growth, self.rules, self.sc, self.p)
 
 
-def Compute_Grid(Idx, Coeff, q_max, rules, growth, LevelMax, sc, p, tol, ):
+def Compute_Grid(Idx, Coeff, q_max, rules, growth, LevelMax, sc, p, tol ):
     """
         Calculate a sparse grid quadrature scheme from a set of index
         vectors.
@@ -484,6 +513,69 @@ def Compute_Grid(Idx, Coeff, q_max, rules, growth, LevelMax, sc, p, tol, ):
     points = Sandia.weights_and_points(new_np, LevelMax, Idx, Coeff, growth, rules, sc, p)
     N_Unique, sparse_index = Sandia.unique_points(seed, tol, points)
     return Sandia.reduce_points_and_weights(N_Unique, points, Idx, sparse_index, Coeff, growth, rules, sc, p)
+
+
+
+def TensorProduct(LevelMax, num_dim, rules, Distribution_Args):
+        """
+            Instead of forming a sparse grid of quadrature points, form the full tensor product
+        
+            Args:
+                LevelMax:
+                    The maximum allowed quadrature level
+                
+                num_dim:
+                    The total number of dimensions
+        
+                rules:
+                    the quadrature rule types
+                    
+                Distribution_Args:
+
+
+        """
+        
+        q_max = LevelMax * num_dim
+        tol=np.sqrt( sys.float_info.epsilon )
+        Idx = CalcSparseSet(0, LevelMax, 1)
+        seed = 123456789
+        growth=np.zeros(1,int)
+        pts=[]
+        wts=[]
+        Num_Points=1
+        sc=np.ones(1,int)
+        p=[]
+        for i,r in enumerate(rules):
+            
+            if Distribution_Args is None: sc*=0.0
+            else:
+                if Distribution_Args[i] is None: sc*=0.0
+                else:
+                    sc*=len(Distribution_Args[i])
+                    p=[val for val in Distribution_Args[i]]
+            
+            Coeff= Sandia.calculate_coefficients(Idx, q_max)
+            new_np = Sandia.max_next_points(Idx, Coeff, [r], growth)
+            points = Sandia.weights_and_points(new_np, LevelMax, Idx, Coeff, growth, [r], sc, p)
+        
+            N_Unique, sparse_index = Sandia.unique_points(seed, tol, points)
+            Points, Weights=Sandia.reduce_points_and_weights(N_Unique, points, Idx, sparse_index, Coeff, growth, [r], sc, p)
+                        
+            pts.append(Points[0,:])
+            wts.append(Weights)
+            Num_Points *=np.shape(Points)[1]
+            
+        tmp=itertools.product(*pts)
+        Points=np.zeros([num_dim,Num_Points],float)
+        for i,j in enumerate(tmp):
+            Points[:,i] = np.asarray(j)
+            
+        tmp=itertools.product(*wts)
+        Weights=np.zeros([Num_Points],float)
+        for i,j in enumerate(tmp):
+            Weights[i] = reduce(mul,j)
+            
+        return Points, Weights, Num_Points
 
 def CalcSparseSet(level_min, level_max, dim_num):
     sparse_set=[]

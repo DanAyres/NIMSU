@@ -11608,13 +11608,14 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
 !
 !  GL
 !  Default is Moderate Linear Growth.
+! Default is Full Exponential Growth. DA
 !
     else if ( rule(dim) == 4 ) then
       if ( growth(dim) == 1 ) then
         o = level(dim) + 1
       else if ( growth(dim) == 2 ) then
         o = 2 * ( ( level(dim) + 1 ) / 2 ) + 1
-      else if ( growth(dim) == 3 .or. growth(dim) == 0 ) then
+      else if ( growth(dim) == 3  ) then
         o = 2 * level(dim) + 1
       else if ( growth(dim) == 4 ) then
         o = 1
@@ -11626,19 +11627,20 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         do while ( 2 * o - 1 < 4 * level(dim) + 1 )
           o = 2 * o + 1
         end do
-      else if ( growth(dim) == 6 ) then
+      else if ( growth(dim) == 6 .or. growth(dim) == 0) then
         o =  2 ** ( level(dim) + 1 ) - 1
       end if
 !
 !  GH
 !  Default is Moderate Linear Growth.
+! Default is Full Exponential Growth. DA
 !
     else if ( rule(dim) == 5 ) then
       if ( growth(dim) == 1 ) then
         o = level(dim) + 1
       else if ( growth(dim) == 2 ) then
         o = 2 * ( ( level(dim) + 1 ) / 2 ) + 1
-      else if ( growth(dim) == 3 .or. growth(dim) == 0 ) then
+      else if ( growth(dim) == 3  ) then
         o = 2 * level(dim) + 1
       else if ( growth(dim) == 4 ) then
         o = 1
@@ -11650,19 +11652,20 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         do while ( 2 * o - 1 < 4 * level(dim) + 1 )
           o = 2 * o + 1
         end do
-      else if ( growth(dim) == 6 ) then
+      else if ( growth(dim) == 6 .or. growth(dim) == 0) then
         o =  2 ** ( level(dim) + 1 ) - 1
       end if
 !
 !  GGH
 !  Default is Moderate Linear Growth.
+! Default is Full Exponential Growth. DA
 !
     else if ( rule(dim) == 6 ) then
       if ( growth(dim) == 1 ) then
         o = level(dim) + 1
       else if ( growth(dim) == 2 ) then
         o = 2 * ( ( level(dim) + 1 ) / 2 ) + 1
-      else if ( growth(dim) == 3 .or. growth(dim) == 0 ) then
+      else if ( growth(dim) == 3  ) then
         o = 2 * level(dim) + 1
       else if ( growth(dim) == 4 ) then
         o = 1
@@ -11674,7 +11677,7 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         do while ( 2 * o - 1 < 4 * level(dim) + 1 )
           o = 2 * o + 1
         end do
-      else if ( growth(dim) == 6 ) then
+      else if ( growth(dim) == 6 .or. growth(dim) == 0 ) then
         o =  2 ** ( level(dim) + 1 ) - 1
       end if
 !
@@ -11686,7 +11689,7 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         o = level(dim) + 1
       else if ( growth(dim) == 2 ) then
         o = 2 * ( ( level(dim) + 1 ) / 2 ) + 1
-      else if ( growth(dim) == 3 .or. growth(dim) == 0 ) then
+      else if ( growth(dim) == 3  ) then
         o = 2 * level(dim) + 1
       else if ( growth(dim) == 4 ) then
         o = 1
@@ -11698,7 +11701,7 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         do while ( 2 * o - 1 < 4 * level(dim) + 1 )
           o = 2 * o + 1
         end do
-      else if ( growth(dim) == 6 ) then
+      else if ( growth(dim) == 6 .or. growth(dim) == 0) then
         o =  2 ** ( level(dim) + 1 ) - 1
       end if
 !
@@ -11710,7 +11713,7 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         o = level(dim) + 1
       else if ( growth(dim) == 2 ) then
         o = 2 * ( ( level(dim) + 1 ) / 2 ) + 1
-      else if ( growth(dim) == 3 .or. growth(dim) == 0 ) then
+      else if ( growth(dim) == 3  ) then
         o = 2 * level(dim) + 1
       else if ( growth(dim) == 4 ) then
         o = 1
@@ -11722,7 +11725,7 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         do while ( 2 * o - 1 < 4 * level(dim) + 1 )
           o = 2 * o + 1
         end do
-      else if ( growth(dim) == 6 ) then
+      else if ( growth(dim) == 6  .or. growth(dim) == 0) then
         o =  2 ** ( level(dim) + 1 ) - 1
       end if
 !
@@ -11734,7 +11737,7 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         o = level(dim) + 1
       else if ( growth(dim) == 2 ) then
         o = 2 * ( ( level(dim) + 1 ) / 2 ) + 1
-      else if ( growth(dim) == 3 .or. growth(dim) == 0 ) then
+      else if ( growth(dim) == 3  ) then
         o = 2 * level(dim) + 1
       else if ( growth(dim) == 4 ) then
         o = 1
@@ -11746,7 +11749,7 @@ subroutine level_growth_to_order ( dim_num, level, rule, growth, order )
         do while ( 2 * o - 1 < 4 * level(dim) + 1 )
           o = 2 * o + 1
         end do
-      else if ( growth(dim) == 6 ) then
+      else if ( growth(dim) == 6 .or. growth(dim) == 0) then
         o =  2 ** ( level(dim) + 1 ) - 1
       end if
 !
